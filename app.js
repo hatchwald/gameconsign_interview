@@ -7,6 +7,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const anagramRouter = require('./routes/anagram');
 const plusRouter = require('./routes/plus');
+const tokenRouter = require('./routes/token');
 
 var app = express();
 app.set('view engine', 'pug')
@@ -20,5 +21,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/anagram', anagramRouter);
 app.use('/plus', plusRouter);
+app.use('/token', tokenRouter);
 require("./routes/config")(app)
 module.exports = app;
