@@ -1,27 +1,20 @@
-name: Deploy
+name: Deploy to Heroku
 
 on:
-  push:
-    branches:
-      - master
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+  deploy:
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == github.event.repository.default_branch
+    concurrency: myapp
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Updating Ubuntu system and Heroku
-        env: 
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: sudo apt update && sudo apt install heroku neofetch
-      - name: Checking the info
-        run: neofetch
-
-      - uses: akhileshns/heroku-deploy@v3.8.8
+      - uses: dentarg/heroku@v1
         with:
-          heroku_email: your Heroku e-mail
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{ secrets.HEROKU_APP_PRODUCTION }}
-          branch: HEAD
-          useforce: false
-          dynamicFiles: false
+          app: ${{ secrets.HEROKU_APP_PRODUCTION }}
+          key: ${{ secrets.HEROKU_API_KEY }}
+          github-token: ${{ secrets.TOKEN_GITHUB }}
